@@ -1,5 +1,6 @@
 import { ProductsDatabaseConfig } from "../Config";
 import { postData, readData } from "../Database/FirebaseRealtime";
+import { resetProductDatabase } from "../Database/ProductsDatabase";
 import { UploadFile } from "../Storage/StorageService";
 
 
@@ -24,9 +25,11 @@ export async function synchroniseDatabase(onSuccess:()=>void , onFail:()=>void){
 
 export async function resetDatabase(onSuccess:()=>void , onFail:()=>void){
     const versionPath = "version";
-
-    UploadFile(databasePath).then(()=>{
-        postData(versionPath,0).then(onSuccess).catch(onFail);
+    resetProductDatabase().then(()=>{
+        UploadFile(databasePath).then(()=>{
+            postData(versionPath,0).then(onSuccess).catch(onFail);
+    });
+   
     }).catch(onFail);
 
 }

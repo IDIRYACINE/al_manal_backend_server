@@ -15,13 +15,13 @@
     }
 
     export const Emulator = {
-        firestore: "192.168.1.5:8080" ,
+        firestore: "192.168.1.6:8080" ,
         firestoreEnvKey :"FIRESTORE_EMULATOR_HOST",
-        database:"192.168.1.5:9000",
+        database:"192.168.1.6:9000",
         databaseEnvKey :"FIREBASE_DATABASE_EMULATOR_HOST",
-        auth:"192.168.1.5:9099",
+        auth:"192.168.1.6:9099",
         authEnvKey :"FIREBASE_AUTH_EMULATOR_HOST",
-        storage : "192.168.1.5:9199",
+        storage : "192.168.1.6:9199",
         storageEnvKey :"FIREBASE_STORAGE_EMULATOR_HOST"
     }
     const apiVersion = "v1";

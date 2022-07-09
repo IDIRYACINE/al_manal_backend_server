@@ -8,7 +8,7 @@ import { setUpProductsDatabase } from './Database/ProductsDatabase';
 function App(isTestMode:boolean){   
         let databaseUrl;
         if (isTestMode){
-                databaseUrl = "http://192.168.1.5:9000/?ns=online-order-client";
+                databaseUrl = "http://192.168.1.6:9000/?ns=online-order-client";
                 process.env[Emulator.authEnvKey] = Emulator.auth
                 process.env[Emulator.databaseEnvKey] = Emulator.database
                 process.env[Emulator.storageEnvKey] = Emulator.storage

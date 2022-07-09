@@ -1,6 +1,8 @@
 
 import Database from 'better-sqlite3';
-import { ProductsDatabaseConfig as configuration} from "../Config"
+import { unlinkSync } from 'fs';
+
+import { ProductsDatabaseConfig as configuration, ProductsDatabaseConfig} from "../Config"
 
 type Category = {
     Id : string,
@@ -65,7 +67,7 @@ type CreateCategoryOptions = {
 
     export async function createCategory(options:CreateCategoryOptions){
         const category = options.category 
-
+       
         const createCategoryTable = connection.prepare("CREATE TABLE IF NOT EXISTS "+ category.Name +" (\n"
         + "	Id Integer PRIMARY KEY AUTOINCREMENT,\n"
         + "	Name text NOT NULL,\n"
@@ -79,31 +81,8 @@ type CreateCategoryOptions = {
         const registerCategory = connection.prepare("INSERT INTO "+configuration.categoryTableName+"(Id,Name,ImageUrl,ProductsCount) VALUES(?,?,?,?)")
         registerCategory.run(category.Name,category.Name,category.ImageUrl,0)
 
-      
     }
 
-    export async function updateCategory(options:UpdateOptions){
-        let update_category_query = "UPDATE "+ configuration.categoryTableName +" SET "
-        let query_helper = []
-
-        const updatedValues = options.updatedValues
-        const attributesLength = updatedValues.length
-
-        for(let i = 0  ;i < attributesLength ; i++){
-            if(i != attributesLength - 1){
-                update_category_query +=  updatedValues[i].name +" = ? ,"
-                query_helper.push(updatedValues[i].value)
-            }
-            else{
-                update_category_query += updatedValues[i].name +" = ? WHERE Id = ? "
-                query_helper.push(updatedValues[i].value)
-                query_helper.push(options.categoryId)
-            }
-        }
-
-        const stmt = connection.prepare(update_category_query)
-        stmt.run(query_helper)
-    }
 
     export async function deleteCategory(options:DeleteOptions){
         const dropTable = connection.prepare("DROP TABLE IF EXISTS " + options.categoryId)
@@ -141,39 +120,34 @@ type CreateCategoryOptions = {
 
     }
 
-    export async function updateProduct(options:UpdateOptions){
-        let update_product_query = `UPDATE ${options.categoryId} SET `
-        let query_helper = []
-        const updatedValues = options.updatedValues
-        const attributesLength = options.updatedValues.length
-
-        let name : string 
-
-        function appendAttribValueToQuery(name:string,value:any) {
-            if( (name === "Size") || (name === "Price")){
-                query_helper.push(JSON.stringify(value))
-            }
-            else{
-                query_helper.push(value)
-            }
-        }
-
-        for(let i = 0 ; i < attributesLength ; i++){
-            name = updatedValues[i].name
-            if(i != attributesLength - 1){
-                update_product_query +=  name +" = ? ,"
-               appendAttribValueToQuery(name,updatedValues[i].value)
-            }
-            else{
-                update_product_query += name +" = ? WHERE Id = ? "
-                appendAttribValueToQuery(name,updatedValues[i].value)
-                query_helper.push(options.productId!)
-            }
-        }
+    export async function updateProduct(options:{product:Product,categoryId:String}){
+        let update_product_query = `UPDATE ${options.categoryId} SET Name=? ImageUrl=? Description=? Size=? Price=? WHERE Id = ? `
+       
         const stmt = connection.prepare(update_product_query)
-        stmt.run(query_helper)
+        stmt.run([
+            options.product.Name, options.product.ImageUrl, options.product.Description, options.product.Size,
+             options.product.Price, options.product.Id
+        ])
     }
 
 
+    export async function updateCategory(options:Category){
+        let update_category_query = "UPDATE "+ configuration.categoryTableName +" SET Name = ? ImageUrl=? ProductsCount=? WHERE Id = ?"
+       
+
+
+        const stmt = connection.prepare(update_category_query)
+        stmt.run([
+            options.Name,options.ImageUrl,options.ProductsCount,options.Id
+        ])
+    }
+
+    export async function resetProductDatabase(){
+        const path = ProductsDatabaseConfig.databaseUrl+'/'+ProductsDatabaseConfig.databaseName;
+        connection.close();
+        unlinkSync(path);
+        setUpProductsDatabase();
+        
+    }
 
 

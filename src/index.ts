@@ -25,8 +25,10 @@ nodeApp.listen(process.env.PORT || 3001);
 App(true)
 
 nodeApp.post(Api.createCategory, (req, res) => {  
+
   createCategory(req.body.options)
   .then(()=>{
+    
       res.json({msg:"Created Category"})
   })
   .catch(error=>{
@@ -65,6 +67,7 @@ nodeApp.get(Api.deleteCategory, (req, res) => {
 
 
 nodeApp.post(Api.updateCategory, (req, res) => {
+  console.log(req.body)
   updateCategory(req.body.options)
   .then(()=>{
     res.json({response:"Updated Category"})
@@ -115,6 +118,7 @@ nodeApp.get(Api.deleteProduct, (req, res) => {
 
 
 nodeApp.post(Api.updateProduct, (req, res) => {
+  console.log(req.body)
   updateProduct(req.body.options)
   .then(()=>{
     res.json({response:"Updated Product"})
@@ -150,11 +154,4 @@ nodeApp.get(Api.resetDatabase,(req,res)=>{
   
 })
 
-
-nodeApp.get("/test",(req,res)=>{
-  postData("test","test")
-  res.send("test")
-   
-  
-})
 
